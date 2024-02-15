@@ -1,6 +1,7 @@
-from handlers import check_valid_new_entry
-from export import create_new_entry
-from imports import get_entry_by_values
+from handlers import check_valid_new_entry, check_valid_characteristics, get_table_views, check_availability_phone_in_db
+from export import create_new_entry, change_entry_data
+from imports import get_entry_by_values, get_count_pages, get_page
+
 
 def get_information_interaction():
     get_action = input('Получить информацию из справочника: \n'
@@ -10,9 +11,13 @@ def get_information_interaction():
                          ' - Выйти из программы: Введите "exit" \n')
 
     if get_action.isdigit():
-        pass
+        phone_book_by_page = get_page(get_action)
+        if phone_book_by_page.empty:
+            return print("Такой страницы не существует")
+        return get_table_views(phone_book_by_page)
+
     else:
-        if get_action not in ["count", "characteristics", "exit"]:
+        if get_action not in ["count", "values", "exit"]:
             print("Введенные вами данные должны быть в соответствии с запрашиваемым контекстом")
         else:
             if get_action == "values":
@@ -32,14 +37,14 @@ def get_information_interaction():
                     "organization": organization,
                     "organization_phone_number": organization_phone_number,
                     "personal_phone_number": personal_phone_number}
-                valid_characteristics = check_valid_new_entry(characteristics)
+                valid_characteristics = check_valid_characteristics(characteristics)
                 if valid_characteristics is True:
-                    get_entry_by_values(characteristics)
-
+                    phone_book_df_by_values = get_entry_by_values(characteristics)
+                    return get_table_views(phone_book_df_by_values)
                 else:
                     print("Ошибка ввода данных")
-
-
+            if get_action == "count":
+                print(f"Количество страниц в справочнике: {get_count_pages()} \n")
 
 def post_information_interaction():
     print("Для внесения новой позиции в справочник введите запрашиваемые обязательные поля: ")
@@ -64,7 +69,21 @@ def post_information_interaction():
         print("Ошибка ввода данных")
 
 
-
+def patch_information_interaction():
+    patch_phone_number = input("Введите личный номер телефона по которому хотите изменить информацию в формате +7XXXXXXXXXX: \n")
+    df_with_personal_number = check_availability_phone_in_db(patch_phone_number)
+    if df_with_personal_number.empty:
+        return print("Такого номера в справочнике не существует")
+    get_table_views(df_with_personal_number)
+    print("Для изменения дaнных по позиции введите новые значения характеристик \n"
+          "(если данная характеристика не будет изменяться нажимте ENTER и переходите к седующей): ")
+    surname = input("Фамилия: ")
+    name = input("Имя: ")
+    middle_name = input("Отчество: ")
+    organization = input("Организация: ")
+    organization_phone_number = input(
+        "Рабочий номер телефона в формате цифр без '+'. Пример: '2461843': \n")
+    personal_phone_number = input("Личный номер телефона в формате +7XXXXXXXXXX: ")
 
 
 
@@ -84,6 +103,9 @@ def main_interaction():
         if io_action == "post":
             post_information_interaction()
 
+        if io_action == 'patch':
+            patch_information_interaction()
+
         # elif io_action == "1":
         #     one()
         # elif io_action == "2":
@@ -95,6 +117,3 @@ def main_interaction():
         # else:
         #     print("Пока")
         #     break
-
-
-main_interaction()
