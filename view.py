@@ -19,7 +19,7 @@ def get_information_interaction():
     get_action = input('Получить информацию из справочника: \n'
                          ' - Получить информацию общего количества страниц: Введите "count" \n'
                          ' - Получить инфромацию по одной или нескольким характеристикам: Введите "values" \n'
-                         ' - Получить информацию по номеру страницы: Введите "<номер страницы>" \n'
+                         ' - Получить информацию по номеру страницы (кол-во контактов на одной странице - 10): Введите "<номер страницы>" \n'
                          ' - Выйти из программы: Введите "exit" \n')
 
     if get_action.isdigit():
@@ -78,7 +78,7 @@ def post_information_interaction():
         create_new_entry(new_entry)
         print("Ваша запись успешно добавлена")
     else:
-        print("Ошибка ввода данных")
+        print("Ошибка ввода данных. Либо личный номер телефона уже сущетвует в справочнике у другого контакта.")
 
 
 def patch_information_interaction():
@@ -102,8 +102,8 @@ def patch_information_interaction():
                       organization_phone_number, personal_phone_number)
         check_valid_patch = check_valid_patch_entry(patch_entry)
         if check_valid_patch is False:
-            return print("Ошибка ввода данных. Изменяемые номра телефонов либо не валидны, "
-                         "либо изменяемый личный номер телефона уже сущетсует в справочнике у другого контакта.")
+            return print("Ошибка ввода данных. Изменяемые номера телефонов либо не валидны, "
+                         "либо изменяемый личный номер телефона уже сущетвует в справочнике у другого контакта.")
         return change_entry_data(patch_phone_number, patch_entry)
     except FileNotFoundError:
         print("В справочнике еще нет ни одной записи")

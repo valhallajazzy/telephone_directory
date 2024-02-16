@@ -1,17 +1,20 @@
 import phonenumbers
+from phonenumbers.phonenumberutil import NumberParseException
 from terminaltables import AsciiTable
-from pathlib import Path
+from settings import path
 import pandas as pd
-
-PATH_TO_FOLDER = Path.cwd() / 'database'
 
 
 def check_valid_number(phone_number):
-    if phone_number[1:].isdigit() is False:
-        print(phone_number[1:])
+    try:
+        if phone_number[1:].isdigit() is False:
+            print(phone_number[1:])
+            return False
+        number = phonenumbers.parse(phone_number, "RU")
+        return phonenumbers.is_valid_number(number)
+    except NumberParseException:
+        print('Непроавильно введен код страны')
         return False
-    number = phonenumbers.parse(phone_number, "RU")
-    return phonenumbers.is_valid_number(number)
 
 
 def check_valid_new_entry(new_entry):
@@ -19,6 +22,8 @@ def check_valid_new_entry(new_entry):
         if value == '':
             return False
     if check_valid_number(new_entry["personal_phone_number"]) is False:
+        return False
+    if not check_availability_phone_in_db(new_entry["personal_phone_number"]).empty:
         return False
     if len(new_entry["organization_phone_number"]) < 3 or new_entry["organization_phone_number"].isdigit() is False:
         return False
@@ -43,13 +48,13 @@ def get_table_views(dataframe):
     print(AsciiTable(table).table)
 
 
-def check_availability_phone_in_db(phone_number, path=PATH_TO_FOLDER):
+def check_availability_phone_in_db(phone_number, path=path):
     phone_book_df = pd.read_csv(f'{path}/phone_book_db.csv')
     phone_book_df = phone_book_df[phone_book_df["personal_phone_number"] == int(phone_number[1:])]
     return phone_book_df
 
 
-def check_valid_patch_entry(patch_entry, path=PATH_TO_FOLDER):
+def check_valid_patch_entry(patch_entry, path=path):
     if patch_entry["personal_phone_number"] != "":
         if check_valid_number(patch_entry["personal_phone_number"]) is False:
             return False

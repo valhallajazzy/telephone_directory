@@ -1,11 +1,11 @@
+import os
 from pathlib import Path
 import pandas as pd
+from settings import path
 
-PATH_TO_FOLDER = Path.cwd() / 'database'
 
-
-def create_new_entry(new_entry, path=PATH_TO_FOLDER):
-    path.mkdir(parents=True, exist_ok=True)
+def create_new_entry(new_entry, path=path):
+    os.makedirs(f'{path}', exist_ok=True)
     new_entry_df = pd.DataFrame([new_entry], columns=[
         "surname", "name", "middle_name", "organization",
         "organization_phone_number", "personal_phone_number"])
@@ -15,7 +15,7 @@ def create_new_entry(new_entry, path=PATH_TO_FOLDER):
         new_entry_df.to_csv(f'{path}/phone_book_db.csv', mode='a', index=False)
 
 
-def change_entry_data(patch_phone_number, patch_entry, path=PATH_TO_FOLDER):
+def change_entry_data(patch_phone_number, patch_entry, path=path):
     phone_book_df = pd.read_csv(f'{path}/phone_book_db.csv')
     phone_book_df_patch = phone_book_df[
         phone_book_df["personal_phone_number"] == int(patch_phone_number[1:])
