@@ -40,7 +40,7 @@ $ python3 main.py
 * Если вы хотите изменить путь хранения файла базы данных, то в корневой директории проекта  
 нужно создать файл .env и обозначить переменную окружения `PATH_TO_FOLDER` - содержащую путь к файлу базы данных
 
-![Screenshot]()
+![Screenshot](https://github.com/valhallajazzy/telephone_directory/blob/main/pic/path_changes.png)
 
 ## Краткое описание структуры и функций
 
