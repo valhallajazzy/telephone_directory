@@ -6,11 +6,11 @@ import pandas as pd
 PATH_TO_FOLDER = Path.cwd() / 'database'
 
 
-def check_valid_number(phonenumber):
-    if phonenumber[1:].isdigit() is False:
-        print(phonenumber[1:])
+def check_valid_number(phone_number):
+    if phone_number[1:].isdigit() is False:
+        print(phone_number[1:])
         return False
-    number = phonenumbers.parse(phonenumber, "RU")
+    number = phonenumbers.parse(phone_number, "RU")
     return phonenumbers.is_valid_number(number)
 
 
@@ -49,19 +49,17 @@ def check_availability_phone_in_db(phone_number, path=PATH_TO_FOLDER):
     return phone_book_df
 
 
-
-
-
-
-
-
-
-
-
-# new_entry = {
-#         "surname": surname,
-#         "name": name,
-#         "middle_name": middle_name,
-#         "organization": organization,
-#         "organization_phone_number": organization_phone_number,
-#         "personal_phone_number": personal_phone_number }
+def check_valid_patch_entry(patch_entry, path=PATH_TO_FOLDER):
+    if patch_entry["personal_phone_number"] != "":
+        if check_valid_number(patch_entry["personal_phone_number"]) is False:
+            return False
+        phone_book_df = pd.read_csv(f'{path}/phone_book_db.csv')
+        phone_book_df = phone_book_df[
+            phone_book_df["personal_phone_number"] == int(patch_entry["personal_phone_number"][1:])
+        ]
+        if not phone_book_df.empty:
+            return False
+    if patch_entry["organization_phone_number"] != "":
+        if len(patch_entry["organization_phone_number"]) < 3 or patch_entry["organization_phone_number"].isdigit() is False:
+            return False
+    return True
